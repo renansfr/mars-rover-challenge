@@ -42,7 +42,7 @@
                   <mp-text-field
                     v-model="item.instructions"
                     placeholder="e.g. LMLMLMLMM"
-                    :disabled="isAvailableCoordinates(index) && !isValidCoordinates(index) && !isValidDirection(index)"
+                    :disabled="isAvailableCoordinates(index) && !isValidCoordinates(item)"
                     id="roverPosition"
                   />
                 </mp-field>
@@ -73,7 +73,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, watch, nextTick } from 'vue'
 import Plateau from '../components/plateau.vue'
-import { Direction } from '../../app/enums'
+import { Direction, Move } from '../../app/enums'
 import useVuelidate from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { useDialog } from '@/modules/app/compositions'
@@ -129,10 +129,10 @@ export default defineComponent({
       })
     }
 
-    const alertCannotMoveForward = async () => {
+    const alertCannotMove = async () => {
       await dialog.confirm({
         title: 'Warning',
-        message: 'The coordinates you are trying to move forward are already occupied by another rover. Try another instruction.',
+        message: 'The coordinates you are trying to go are already occupied by another rover. Try another instruction.',
         okButtonText: 'Ok',
         okButtonType: 'primary'
       })
@@ -147,10 +147,19 @@ export default defineComponent({
       })
     }
 
-    const alertOutsidePlateauFirstPosition = async () => {
+    const alertOutsidePlateauInitialPosition = async () => {
       await dialog.confirm({
         title: 'Warning',
         message: 'The coordinates you are trying to add the rover are outside the plateau. Try another initial position.',
+        okButtonText: 'Ok',
+        okButtonType: 'primary'
+      })
+    }
+
+    const alertUnavailableInitialPosition = async () => {
+      await dialog.confirm({
+        title: 'Warning',
+        message: 'The initial coordinates you are trying to add or modify the rover are already the initial position of another rover. Try another initial position.',
         okButtonText: 'Ok',
         okButtonType: 'primary'
       })
@@ -164,6 +173,15 @@ export default defineComponent({
         okButtonType: 'primary'
       })
     }
+
+    // const alertIncompleteRoverForm = async () => {
+    //   await dialog.confirm({
+    //     title: 'Warning',
+    //     message: 'You must enter valid initial position in all current fields to add more rovers.',
+    //     okButtonText: 'Ok',
+    //     okButtonType: 'primary'
+    //   })
+    // }
 
     const computedRoverForm = computed<any>({
       get() {
@@ -179,9 +197,9 @@ export default defineComponent({
       return !vp$.value.$invalid
     }
 
-    const isValidCoordinates = (index: number) => {
-      const validInput = /^[0-9]+ [0-9]+ [N|S|E|W]$/.test(computedRoverForm.value[index].roverPosition)
-      const roverPositionArray = computedRoverForm.value[index].roverPosition.split(' ')
+    const isValidCoordinates = (rover) => {
+      const validInput = /^[0-9]+ [0-9]+ [N|S|E|W]$/.test(rover.roverPosition)
+      const roverPositionArray = rover.roverPosition.split(' ')
       const x = parseInt(roverPositionArray[0])
       const y = parseInt(roverPositionArray[1])
       const validDirection = Object.values(Direction).includes(roverPositionArray[2] as Direction)
@@ -191,49 +209,50 @@ export default defineComponent({
       if (validInput && x <= upperRightX && y <= upperRightY && validDirection) {
         return true
       }
-      computedRoverForm.value[index].instructions = ''
+      rover.instructions = ''
       return false
     }
 
-    const isValidDirection = (index: number) => {
-      const validInput = /^[0-9]+ [0-9]+ [N|S|E|W]$/.test(computedRoverForm.value[index].roverPosition)
-      const roverPositionArray = computedRoverForm.value[index].roverPosition.split(' ')
-      if (validInput && Object.values(Direction).includes(roverPositionArray[2] as Direction)) {
-        return true
-      }
-      computedRoverForm.value[index].instructions = ''
-      return false
-    }
-
-    const isAvailableCoordinates = (index: number) => {
-      const roverPositionArray = computedRoverForm.value[index].roverPosition.split(' ')
+    const isAvailableCoordinates = (roverIndex: number) => {
+      const roverPositionArray = computedRoverForm.value[roverIndex].roverPosition.split(' ')
       const x = parseInt(roverPositionArray[0])
       const y = parseInt(roverPositionArray[1])
       const upperRightCoordinatesArray = plateauForm.upperRightCoordinates.split(' ')
       const upperRightX = parseInt(upperRightCoordinatesArray[0])
       const upperRightY = parseInt(upperRightCoordinatesArray[1])
-      rovers.value.forEach((rover, roverIndex) => {
-        if (rover.position.x === x &&
-          rover.position.y === y &&
-          roverIndex !== index) {
-          if (computedRoverForm.value[roverIndex].instructions) {
-            computedRoverForm.value[roverIndex].instructions = computedRoverForm.value[roverIndex].instructions.slice(0, -1)
-            alertCannotMoveForward()
+      if (x > (upperRightX - 1) ||
+        y > (upperRightY - 1) ||
+        x < 0 ||
+        y < 0) {
+        alertOutsidePlateauInitialPosition()
+        computedRoverForm.value[roverIndex].roverPosition = ''
+        computedRoverForm.value[roverIndex].instructions = ''
+        return false
+      }
+      // const unavailableInitialPosition = computedRoverForm.value.find((rover, index) => {
+      //   if (index !== roverIndex) {
+      //     const computedRoverPositionArray = rover.roverPosition.split(' ')
+      //     const computedX = parseInt(computedRoverPositionArray[0])
+      //     const computedY = parseInt(computedRoverPositionArray[1])
+      //     if (x === computedX && y === computedY) {
+      //       alertUnavailableInitialPosition()
+      //       computedRoverForm.value[index].roverPosition = ''
+      //       computedRoverForm.value[index].instructions = ''
+      //       return false
+      //     }
+      //   }
+      // })
+      computedRoverForm.value.forEach((rover, index: number) => {
+        if (index !== roverIndex) {
+          const computedRoverPositionArray = rover.roverPosition.split(' ')
+          const computedX = parseInt(computedRoverPositionArray[0])
+          const computedY = parseInt(computedRoverPositionArray[1])
+          if (x === computedX && y === computedY) {
+            alertUnavailableInitialPosition()
+            computedRoverForm.value[index].roverPosition = ''
+            computedRoverForm.value[index].instructions = ''
             return false
           }
-          alertUnavailableCoordinates()
-          computedRoverForm.value[roverIndex].roverPosition = ''
-          computedRoverForm.value[roverIndex].instructions = ''
-          return false
-        }
-        if (rover.position.x > (upperRightX - 1) ||
-          rover.position.y > (upperRightY - 1) ||
-          rover.position.x < 0 ||
-          rover.position.y < 0) {
-          alertOutsidePlateauFirstPosition()
-          computedRoverForm.value[roverIndex].roverPosition = ''
-          computedRoverForm.value[roverIndex].instructions = ''
-          return false
         }
       })
       return true
@@ -249,11 +268,20 @@ export default defineComponent({
     }
 
     const addRoverForm = () => {
+      // const hasIncompleteRoverForm = computedRoverForm.value.find((rover) => !isValidCoordinates(rover))
+      // if (hasIncompleteRoverForm) {
+      //   alertIncompleteRoverForm()
+      //   return
+      // }
       roverForm.value.push({
         roverPosition: '',
         instructions: ''
       })
     }
+
+    // const removeRoverForm = (index: number) => {
+    //   roverForm.value.splice(index, 1)
+    // }
 
     const goBack = async () => {
       const shouldClose = await dialog.confirm({
@@ -276,106 +304,195 @@ export default defineComponent({
       }
     }
 
+    const resolveSequentially = async (array, fn) => {
+      await array.reduce(
+        (acc, item) => acc.then(async () => fn(item)),
+        Promise.resolve()
+      )
+    }
+
+    const executeInstructions = (roverForm, roverIndex) => {
+      const roverPosition = roverForm.roverPosition
+      const roverPositionArray = roverPosition.split(' ')
+      let roverPositionX = parseInt(roverPositionArray[0])
+      let roverPositionY = parseInt(roverPositionArray[1])
+      let roverDirection = roverPositionArray[2]
+      const northMovementIsAvailableCoordinates = (roverPositionY) => {
+        const futureYCoordinate = roverPositionY + 1
+        if (isUnavailableCoordinate(roverPositionX, futureYCoordinate)) {
+          return false
+        }
+        return true
+      }
+
+      const northMovementIsInsidePlateau = (roverPositionY) => {
+        const futureYCoordinate = roverPositionY + 1
+        if (!(futureYCoordinate < (parseInt(plateauForm.upperRightCoordinates.split(' ')[1])))) {
+          return false
+        }
+        return true
+      }
+
+      const southMovementIsAvailableCoordinates = (roverPositionY) => {
+        const futureYCoordinate = roverPositionY - 1
+        if (isUnavailableCoordinate(roverPositionX, futureYCoordinate)) {
+          return false
+        }
+        return true
+      }
+
+      const southMovementIsInsidePlateau = (roverPositionY) => {
+        const futureYCoordinate = roverPositionY - 1
+        if (!(futureYCoordinate >= 0)) {
+          return false
+        }
+        return true
+      }
+
+      const eastMovementIsAvailableCoordinates = (roverPositionX) => {
+        const futureXCoordinate = roverPositionX + 1
+        if (isUnavailableCoordinate(futureXCoordinate, roverPositionY)) {
+          return false
+        }
+        return true
+      }
+
+      const eastMovementIsInsidePlateau = (roverPositionX) => {
+        const futureXCoordinate = roverPositionX + 1
+        if (!(futureXCoordinate < (parseInt(plateauForm.upperRightCoordinates.split(' ')[0])))) {
+          return false
+        }
+        return true
+      }
+
+      const westMovementIsAvailableCoordinates = (roverPositionX) => {
+        const futureXCoordinate = roverPositionX - 1
+        if (isUnavailableCoordinate(futureXCoordinate, roverPositionY)) {
+          return false
+        }
+        return true
+      }
+
+      const westMovementIsInsidePlateau = (roverPositionX) => {
+        const futureXCoordinate = roverPositionX - 1
+        if (!(futureXCoordinate >= 0)) {
+          return false
+        }
+        return true
+      }
+
+      const isUnavailableCoordinate = (roverPositionX, roverPositionY) => {
+        const otherRovers = rovers.value.filter((rover, index) => index !== roverIndex)
+        const isUnavailable = otherRovers.some((rover, index) => rover.position.x === roverPositionX && rover.position.y === roverPositionY && index !== roverIndex)
+        return isUnavailable
+      }
+
+      if (roverForm.instructions) {
+        const instructionsArray = roverForm.instructions.split('')
+        instructionsArray.forEach((instruction, index) => {
+          switch (instruction) {
+            case Move.LEFT:
+              switch (roverDirection) {
+                case Direction.NORTH:
+                  roverDirection = Direction.WEST
+                  break
+                case Direction.SOUTH:
+                  roverDirection = Direction.EAST
+                  break
+                case Direction.EAST:
+                  roverDirection = Direction.NORTH
+                  break
+                case Direction.WEST:
+                  roverDirection = Direction.SOUTH
+                  break
+              }
+              break
+            case Move.RIGHT :
+              switch (roverDirection) {
+                case Direction.NORTH:
+                  roverDirection = Direction.EAST
+                  break
+                case Direction.SOUTH:
+                  roverDirection = Direction.WEST
+                  break
+                case Direction.EAST:
+                  roverDirection = Direction.SOUTH
+                  break
+                case Direction.WEST:
+                  roverDirection = Direction.NORTH
+                  break
+              }
+              break
+            case Move.FORWARD:
+              switch (roverDirection) {
+                case Direction.NORTH:
+                  if (!northMovementIsAvailableCoordinates(roverPositionY)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertCannotMove()
+                  }
+                  if (!northMovementIsInsidePlateau(roverPositionY)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertOutsidePlateau()
+                  }
+                  return roverPositionY++
+                case Direction.SOUTH:
+                  if (!southMovementIsAvailableCoordinates(roverPositionY)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertCannotMove()
+                  }
+                  if (!southMovementIsInsidePlateau(roverPositionY)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertOutsidePlateau()
+                  }
+                  return roverPositionY--
+                case Direction.EAST:
+                  if (!eastMovementIsAvailableCoordinates(roverPositionX)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertCannotMove()
+                  }
+                  if (!eastMovementIsInsidePlateau(roverPositionX)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertOutsidePlateau()
+                  }
+                  return roverPositionX++
+                case Direction.WEST:
+                  if (!westMovementIsAvailableCoordinates(roverPositionX)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertCannotMove()
+                  }
+                  if (!westMovementIsInsidePlateau(roverPositionX)) {
+                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    return alertOutsidePlateau()
+                  }
+                  return roverPositionX--
+              }
+              break
+            default:
+              roverForm.instructions = roverForm.instructions.slice(0, -1)
+              return alertInvalidInstructions()
+          }
+        })
+      }
+
+      const instructions = roverForm.instructions
+      const rover = {
+        position: {
+          x: roverPositionX,
+          y: roverPositionY,
+          direction: roverDirection
+        },
+        instructions: instructions
+      }
+      return rover
+    }
+
     watch(
       () => roverForm.value,
-      (newValue) => {
-        const updatedRovers = newValue.map((roverForm) => {
-          const roverPosition = roverForm.roverPosition
-          const roverPositionArray = roverPosition.split(' ')
-          let roverPositionX = parseInt(roverPositionArray[0])
-          let roverPositionY = parseInt(roverPositionArray[1])
-          let roverDirection = roverPositionArray[2]
-          if (roverForm.instructions) {
-            roverForm.instructions.split('').map((instruction) => {
-              switch (instruction) {
-                case 'L':
-                  switch (roverDirection) {
-                    case 'N':
-                      roverDirection = 'W'
-                      break
-                    case 'S':
-                      roverDirection = 'E'
-                      break
-                    case 'E':
-                      roverDirection = 'N'
-                      break
-                    case 'W':
-                      roverDirection = 'S'
-                      break
-                  }
-                  break
-                case 'R':
-                  switch (roverDirection) {
-                    case 'N':
-                      roverDirection = 'E'
-                      break
-                    case 'S':
-                      roverDirection = 'W'
-                      break
-                    case 'E':
-                      roverDirection = 'S'
-                      break
-                    case 'W':
-                      roverDirection = 'N'
-                      break
-                  }
-                  break
-                case 'M':
-                  switch (roverDirection) {
-                    case Direction.NORTH:
-                      if (roverPositionY < (parseInt(plateauForm.upperRightCoordinates.split(' ')[1]) - 1)) {
-                        return roverPositionY++
-                      }
-                      nextTick(() => {
-                        roverForm.instructions = roverForm.instructions.slice(0, -1)
-                      })
-                      return alertOutsidePlateau()
-                    case Direction.SOUTH:
-                      if (roverPositionY > 0) {
-                        return roverPositionY--
-                      }
-                      nextTick(() => {
-                        roverForm.instructions = roverForm.instructions.slice(0, -1)
-                      })
-                      return alertOutsidePlateau()
-                    case Direction.EAST:
-                      if (roverPositionX < (parseInt(plateauForm.upperRightCoordinates.split(' ')[0]) - 1)) {
-                        return roverPositionX++
-                      }
-                      nextTick(() => {
-                        roverForm.instructions = roverForm.instructions.slice(0, -1)
-                      })
-                      return alertOutsidePlateau()
-                    case Direction.WEST:
-                      if (roverPositionX > 0) {
-                        return roverPositionX--
-                      }
-                      nextTick(() => {
-                        roverForm.instructions = roverForm.instructions.slice(0, -1)
-                      })
-                      return alertOutsidePlateau()
-                  }
-                  break
-                default:
-                  nextTick(() => {
-                    roverForm.instructions = roverForm.instructions.slice(0, -1)
-                  })
-                  return alertInvalidInstructions()
-              }
-              return roverDirection
-            })
-          }
-          const instructions = roverForm.instructions
-          const rover = {
-            position: {
-              x: roverPositionX,
-              y: roverPositionY,
-              direction: roverDirection
-            },
-            instructions: instructions
-          }
-          return rover
-        })
+      async (newValue) => {
+        const updatedRovers = await Promise.all(newValue.map(async (roverForm, roverIndex) => {
+          await nextTick()
+          return executeInstructions(roverForm, roverIndex)
+        }))
         rovers.value = updatedRovers
       },
       { deep: true }
@@ -393,7 +510,6 @@ export default defineComponent({
       rovers,
       computedRoverForm,
       isValidCoordinates,
-      isValidDirection,
       isAvailableCoordinates
     }
   }

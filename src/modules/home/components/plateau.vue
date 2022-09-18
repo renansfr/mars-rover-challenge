@@ -5,7 +5,7 @@
         <div v-if="computedRovers">
           ({{ x - 1 }}, {{ upperRightY - y  }})
           <div v-for="(rover, index) in computedRovers" :key="index">
-            <div v-if="rover.position.x === x - 1 && rover.position.y === upperRightY - y && rover.position.direction" >
+            <div v-if="rover.position.x === x - 1 && rover.position.y === upperRightY - y" >
               <div v-if="rover.position.direction === Direction.NORTH" class="items-center justify-center align-center">
                 <img src="../../../assets/images/north-side-rover.png" alt="north" >
               </div>
@@ -17,6 +17,9 @@
               </div>
               <div v-if="rover.position.direction === Direction.EAST">
                 <img src="../../../assets/images/east-side-rover.png" alt="east" class="">
+              </div>
+              <div v-if="!rover.position.direction">
+                <img src="../../../assets/images/north-side-rover.png" alt="north" >
               </div>
             </div>
           </div>
@@ -93,8 +96,8 @@ export default defineComponent({
       () => props.rovers,
       (newValue) => {
         roversInternalValue.value = newValue
-        console.log('computedRovers.value', computedRovers.value)
-      }
+      },
+      { deep: true }
     )
 
     return {
