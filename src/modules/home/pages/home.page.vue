@@ -1,5 +1,5 @@
 <template>
-  <mp-app-page title="Página inicial">
+  <mp-app-page title="Mars Rover Challenge">
     <div id="header" class="bg-white w-full shadow flex justify-center items-center p-2">
       <div class="flex flex-row w-full justify-center align-center items-center" v-if="!validatedUpperRightCoordinates">
         <mp-field label="Upper-right coordinates" class="mb-1" :errors="vp$.upperRightCoordinates.$errors">
