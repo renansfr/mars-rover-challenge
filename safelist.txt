@@ -1,0 +1,2 @@
+animate-wave
+text-[2rem]

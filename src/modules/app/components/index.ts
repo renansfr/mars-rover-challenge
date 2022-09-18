@@ -1,0 +1,5 @@
+export { default as page } from './mp-page/mp-page.component.vue'
+export { default as field } from './mp-field/mp-field.component.vue'
+export { default as textField } from './mp-text-field/mp-text-field.component.vue'
+export { default as spinner } from './mp-spinner/mp-spinner.vue'
+export { default as button } from './mp-button/mp-button.component.vue'

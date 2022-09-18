@@ -1,0 +1,38 @@
+@import url('./reset.css');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('@vueform/multiselect/themes/default.css');
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+  height: 100%;
+}
+
+body {
+  color: theme('colors.gray.800');
+  background-color: theme('colors.gray.100');
+  font-family: theme('fontFamily.base');
+  height: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #a4a6a7;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #695f5f;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  box-shadow: inset 6px 10px 12px #f1f1f1;
+}
