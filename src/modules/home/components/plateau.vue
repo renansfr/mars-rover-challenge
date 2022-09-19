@@ -28,7 +28,7 @@
     </div>
   </div>
   <div v-else>
-    <div class="font-title text-4xl font-semibold text-center mt-8 mb-8">
+    <div class="font-title text-4xl text-red-600 font-semibold text-center mt-8 mb-8">
       Welcome to Mars!
     </div>
     <div class="text-xl text-center">
