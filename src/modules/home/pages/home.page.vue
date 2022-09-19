@@ -11,7 +11,7 @@
           <mp-button
             type="primary"
             variant="default"
-            class="ml-2 align-center items-center w-40 h-full"
+            class="ml-2 align-center items-center w-40 h-9"
             id="login-submit"
             @click="permitToAddRovers()"
           >
@@ -23,7 +23,7 @@
           <mp-button
             type="primary"
             variant="default"
-            class="ml-2 mt-5 align-center items-center h-full justify-center"
+            class="ml-2 mt-5 align-center items-center h-9 justify-center"
             @click="goBack()"
           >
             Go back
@@ -52,7 +52,7 @@
           <mp-button
             type="primary"
             variant="default"
-            class="ml-4 mt-5 align-center items-center h-full justify-center"
+            class="ml-4 mt-5 align-center items-center h-9 justify-center"
             @click="addRoverForm(item)"
           >
             Add rover
