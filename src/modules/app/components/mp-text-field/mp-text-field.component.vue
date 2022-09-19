@@ -2,7 +2,7 @@
   <input
     :class="[
       'form-control block w-full px-3 py-2 text-base font-normal text-gray-800 bg-clip-padding border rounded transition ease-in-out m-0 focus:ring-1 focus:outline-none',
-      hasError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-sky-600  focus:ring-sky-600',
+      hasError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-600  focus:ring-gray-600',
       disabled ? 'bg-gray-200' : 'bg-white'
     ]"
     :placeholder="placeholder"
@@ -13,6 +13,7 @@
     @change="onChange"
     @blur="onBlur"
     @focus="onFocus"
+    v-mask="mask"
   />
 </template>
 
@@ -36,6 +37,11 @@ export default defineComponent({
       type: Boolean,
       required: false,
       default: false
+    },
+    mask: {
+      type: String,
+      required: false,
+      default: null
     }
   },
   setup(props, { emit }) {
@@ -49,15 +55,15 @@ export default defineComponent({
       emit('update:model-value', resolvedValue)
     }
 
-    const onChange = (event) => {
+    const onChange = (event: any) => {
       emit('change', (event.target as HTMLInputElement).value)
     }
 
-    const onBlur = (event) => {
+    const onBlur = (event: any) => {
       emit('blur', (event.target as HTMLInputElement).value)
     }
 
-    const onFocus = (event) => {
+    const onFocus = (event: any) => {
       emit('focus', (event.target as HTMLInputElement).value)
     }
 

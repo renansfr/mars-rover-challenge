@@ -36,7 +36,8 @@
                     v-model="item.roverPosition"
                     placeholder="e.g. 1 2 N"
                     v-autofocus
-                    id="roverPosition"/>
+                    id="roverPosition"
+                  />
                 </mp-field>
                 <mp-field label="Instructions" class="mb-1 ml-4">
                   <mp-text-field
@@ -44,6 +45,7 @@
                     placeholder="e.g. LMLMLMLMM"
                     :disabled="isAvailableCoordinates(index) && !isValidCoordinates(index)"
                     id="roverPosition"
+                    v-mask="{ mask: 'H*', tokens: { 'H': { pattern: /^[LMR]+$/, uppercase: true }}}"
                   />
                 </mp-field>
               </div>
@@ -133,15 +135,6 @@ export default defineComponent({
       await dialog.confirm({
         title: 'Warning',
         message: 'The coordinates you are trying to add the rover are outside the plateau. Try another initial position.',
-        okButtonText: 'Ok',
-        okButtonType: 'primary'
-      })
-    }
-
-    const alertInvalidInstructions = async () => {
-      await dialog.confirm({
-        title: 'Warning',
-        message: 'You must enter valid instructions.',
         okButtonText: 'Ok',
         okButtonType: 'primary'
       })
@@ -310,10 +303,7 @@ export default defineComponent({
               }
               break
             default:
-              nextTick(() => {
-                roverForm.instructions = roverForm.instructions.slice(0, -1)
-              })
-              return alertInvalidInstructions()
+              break
           }
         })
       }
