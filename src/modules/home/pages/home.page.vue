@@ -177,7 +177,7 @@ export default defineComponent({
       return false
     }
 
-    const isAvailableCoordinates = (index: number) => {
+    const isAvailableCoordinates = () => {
       const upperRightCoordinatesArray = plateauForm.upperRightCoordinates.split(' ')
       const upperRightX = parseInt(upperRightCoordinatesArray[0])
       const upperRightY = parseInt(upperRightCoordinatesArray[1])
