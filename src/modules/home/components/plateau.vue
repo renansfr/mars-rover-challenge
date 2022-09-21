@@ -1,25 +1,25 @@
 <template>
-  <div class="flex flex-row" v-if="upperRightX && upperRightY">
+  <div class="flex flex-row" v-if="upperRightX && upperRightY" id="plateau">
     <div v-for="(x, index) in upperRightX" :key="index">
       <div v-for="(y, index) in upperRightY" :key="index" class="bg-red-300 border border-black h-28 w-28 m-1">
         <div v-if="computedRovers">
           ({{ x - 1 }}, {{ upperRightY - y  }})
           <div v-for="(rover, index) in computedRovers" :key="index">
-            <div v-if="rover.position.x === x - 1 && rover.position.y === upperRightY - y" >
+            <div v-if="rover.position.x === x - 1 && rover.position.y === upperRightY - y" id="rover">
               <div v-if="rover.position.direction === Direction.NORTH" class="items-center justify-center align-center">
-                <img src="../../../assets/images/north-side-rover.png" alt="north" >
+                <img src="../../../assets/images/north-side-rover.png" alt="north" id="north-rover">
               </div>
               <div v-if="rover.position.direction === Direction.SOUTH">
-                <img src="../../../assets/images/south-side-rover.png" alt="south" class="">
+                <img src="../../../assets/images/south-side-rover.png" alt="south" id="south-rover">
               </div>
               <div v-if="rover.position.direction === Direction.WEST">
-                <img src="../../../assets/images/west-side-rover.png" alt="west" class="">
+                <img src="../../../assets/images/west-side-rover.png" alt="west" id="west-rover">
               </div>
               <div v-if="rover.position.direction === Direction.EAST">
-                <img src="../../../assets/images/east-side-rover.png" alt="east" class="">
+                <img src="../../../assets/images/east-side-rover.png" alt="east" id="east-rover">
               </div>
               <div v-if="!rover.position.direction">
-                <img src="../../../assets/images/north-side-rover.png" alt="east" class="">
+                <img src="../../../assets/images/north-side-rover.png">
               </div>
             </div>
           </div>

@@ -7,12 +7,13 @@
             v-model="plateauForm.upperRightCoordinates"
             placeholder="e.g. 5 5"
             class="w-full h-full"
+            id="upper-right-coordinates"
           />
           <mp-button
             type="primary"
             variant="default"
             class="ml-2 align-center items-center w-40 h-9"
-            id="login-submit"
+            id="upper-right-submit"
             @click="permitToAddRovers()"
           >
             Add rovers
@@ -24,6 +25,7 @@
             type="primary"
             variant="default"
             class="ml-2 mt-5 align-center items-center h-9 justify-center"
+            id="go-back"
             @click="goBack()"
           >
             Go back
@@ -36,15 +38,14 @@
                     v-model="item.roverPosition"
                     placeholder="e.g. 1 2 N"
                     v-autofocus
-                    id="roverPosition"
-                  />
+                    id="rover-initial-position"/>
                 </mp-field>
                 <mp-field label="Instructions" class="mb-1 ml-4">
                   <mp-text-field
                     v-model="item.instructions"
                     placeholder="e.g. LMLMLMLMM"
                     :disabled="isAvailableCoordinates(index) && !isValidCoordinates(index)"
-                    id="roverPosition"
+                    id="instructions"
                     v-mask="{ mask: 'H*', tokens: { 'H': { pattern: /^[LMR]+$/, uppercase: true }}}"
                   />
                 </mp-field>
@@ -55,6 +56,7 @@
             type="primary"
             variant="default"
             class="ml-4 mt-5 align-center items-center h-9 justify-center"
+            id="add-rover"
             @click="addRoverForm(item)"
           >
             Add rover
