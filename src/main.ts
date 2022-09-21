@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { installComponents, installDirectives } from './modules'
 import router from './router'
+import { maska } from './external-directives'
 
 import './assets/css/styles.css'
 import './assets/css/tailwind.css'
@@ -13,4 +14,5 @@ app.use(router)
   .use(installComponents)
   .use(installDirectives)
   .use(headlessui)
+  .use(maska)
   .mount('#app')
