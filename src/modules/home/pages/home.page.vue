@@ -5,7 +5,7 @@
         <mp-field label="Upper-right coordinates" class="mb-1" :errors="vp$.upperRightCoordinates.$errors">
           <mp-text-field
             v-model="plateauForm.upperRightCoordinates"
-            placeholder="e.g. 5 5"
+            placeholder="5 5"
             class="w-full h-full"
             id="upper-right-coordinates"
           />
@@ -36,14 +36,14 @@
                 <mp-field label="Rover initial position" class="mb-1 ml-4">
                   <mp-text-field
                     v-model="item.roverPosition"
-                    placeholder="e.g. 1 2 N"
+                    placeholder="1 2 N"
                     v-autofocus
                     id="rover-initial-position"/>
                 </mp-field>
                 <mp-field label="Instructions" class="mb-1 ml-4">
                   <mp-text-field
                     v-model="item.instructions"
-                    placeholder="e.g. LMLMLMLMM"
+                    placeholder="LMLMLMLMM"
                     :disabled="isAvailableCoordinates(index) && !isValidCoordinates(index)"
                     id="instructions"
                     v-mask="{ mask: 'H*', tokens: { 'H': { pattern: /^[LMR]+$/, uppercase: true }}}"
