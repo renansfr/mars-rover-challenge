@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 
 const UPPER_RIGHT_COORDINATES = '5 5'
 
-const ROVER_INITIAL_POSITIONS = '1 2 N'
+const ROVER_INITIAL_POSITIONS = ['1 2 N', '3 3 E']
 
 test.describe('New Plateau', () => {
   test('should create a new plateau', async ({ page }) => {
@@ -30,9 +30,17 @@ test.describe('Add New Rovers', () => {
     await page.locator('#upper-right-submit').click()
   })
   test('should add a new rover', async ({ page }) => {
-    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
 
     await expect(page.locator('#rover')).toBeVisible()
+  })
+  test('should add more than one rover', async ({ page }) => {
+    const roverForms = page.locator('#rover-initial-position')
+    await roverForms.nth(0).fill(ROVER_INITIAL_POSITIONS[1])
+    await page.locator('#add-rover').click()
+    await roverForms.nth(1).fill(ROVER_INITIAL_POSITIONS[1])
+
+    await expect(roverForms).toHaveCount(2)
   })
   test('should not permit pass instructions when uncomplete initial position is passed', async ({ page }) => {
     await page.locator('#rover-initial-position').fill('1 2')
@@ -52,7 +60,7 @@ test.describe('Rover Instructions', () => {
     await page.locator('#upper-right-submit').click()
   })
   test('should move rover forward to the correct position', async ({ page }) => {
-    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
     await page.locator('#instructions').fill('M')
 
     await expect(page.locator('#north-rover')).toBeVisible()
@@ -62,7 +70,7 @@ test.describe('Rover Instructions', () => {
   })
 
   test('should turn left', async ({ page }) => {
-    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
     await page.locator('#instructions').fill('L')
 
     await expect(page.locator('#west-rover')).toBeVisible()
@@ -72,7 +80,7 @@ test.describe('Rover Instructions', () => {
   })
 
   test('should turn right', async ({ page }) => {
-    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
     await page.locator('#instructions').fill('R')
 
     await expect(page.locator('#east-rover')).toBeVisible()
@@ -82,7 +90,7 @@ test.describe('Rover Instructions', () => {
   })
 
   test('should not permit to move to a coordinate outside the plateau', async ({ page }) => {
-    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
     await page.locator('#instructions').fill('MMM')
 
     await expect(page.locator('#north-rover')).toBeVisible()
@@ -93,7 +101,7 @@ test.describe('Rover Instructions', () => {
   })
 
   test('should not permit to move to a random coordinate outside the plateau', async ({ page }) => {
-    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
     await page.locator('#instructions').fill('MMMMMMMM')
 
     await expect(page.locator('#north-rover')).toBeVisible()
