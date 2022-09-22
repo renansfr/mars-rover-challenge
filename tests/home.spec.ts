@@ -36,7 +36,7 @@ test.describe('Add New Rovers', () => {
   })
   test('should add more than one rover', async ({ page }) => {
     const roverForms = page.locator('#rover-initial-position')
-    await roverForms.nth(0).fill(ROVER_INITIAL_POSITIONS[1])
+    await roverForms.nth(0).fill(ROVER_INITIAL_POSITIONS[0])
     await page.locator('#add-rover').click()
     await roverForms.nth(1).fill(ROVER_INITIAL_POSITIONS[1])
 
@@ -87,6 +87,16 @@ test.describe('Rover Instructions', () => {
     await expect(page.locator('#east-rover')).toHaveAttribute('direction', 'E')
     await expect(page.locator('#east-rover')).toHaveAttribute('xPosition', '1')
     await expect(page.locator('#east-rover')).toHaveAttribute('yPosition', '2')
+  })
+
+  test('should move rover forward to the correct position when multiple instructions are passed', async ({ page }) => {
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS[0])
+    await page.locator('#instructions').fill('MMRMMMRMRMLM')
+
+    await expect(page.locator('#south-rover')).toBeVisible()
+    await expect(page.locator('#south-rover')).toHaveAttribute('direction', 'S')
+    await expect(page.locator('#south-rover')).toHaveAttribute('xPosition', '3')
+    await expect(page.locator('#south-rover')).toHaveAttribute('yPosition', '2')
   })
 
   test('should not permit to move to a coordinate outside the plateau', async ({ page }) => {
