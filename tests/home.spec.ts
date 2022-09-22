@@ -91,4 +91,15 @@ test.describe('Rover Instructions', () => {
     await expect(page.locator('#north-rover')).toHaveAttribute('yPosition', '4')
     await page.locator('text="The coordinates you are trying to move forward are outside the plateau. Try another instruction."').isVisible()
   })
+
+  test('should not permit to move to a random coordinate outside the plateau', async ({ page }) => {
+    await page.locator('#rover-initial-position').fill(ROVER_INITIAL_POSITIONS)
+    await page.locator('#instructions').fill('MMMMMMMM')
+
+    await expect(page.locator('#north-rover')).toBeVisible()
+    await expect(page.locator('#north-rover')).toHaveAttribute('direction', 'N')
+    await expect(page.locator('#north-rover')).toHaveAttribute('xPosition', '1')
+    await expect(page.locator('#north-rover')).toHaveAttribute('yPosition', '4')
+    await page.locator('text="The coordinates you are trying to move forward are outside the plateau. Try another instruction."').isVisible()
+  })
 })
