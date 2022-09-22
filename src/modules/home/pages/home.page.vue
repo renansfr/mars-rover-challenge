@@ -227,14 +227,16 @@ export default defineComponent({
       }
     }
 
-    const executeInstructions = (roverForm) => {
+    const executeInstructions = async (roverForm) => {
       const roverPosition = roverForm.roverPosition
       const roverPositionArray = roverPosition.split(' ')
       let roverPositionX = parseInt(roverPositionArray[0])
       let roverPositionY = parseInt(roverPositionArray[1])
       let roverDirection = roverPositionArray[2]
-      if (roverForm.instructions) {
-        roverForm.instructions.split('').forEach((instruction) => {
+      let roverTriedToMoveOutsidePlateau = false
+      const instructionsArray = roverForm.instructions.split('')
+      if (instructionsArray) {
+        await instructionsArray.map((instruction, index) => {
           switch (instruction) {
             case Move.LEFT:
               switch (roverDirection) {
@@ -274,40 +276,52 @@ export default defineComponent({
                   if (roverPositionY < (parseInt(plateauForm.upperRightCoordinates.split(' ')[1]) - 1)) {
                     return roverPositionY++
                   }
+                  roverTriedToMoveOutsidePlateau = true
                   nextTick(() => {
-                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    instructionsArray.splice(index, instructionsArray.length)
+                    roverForm.instructions = instructionsArray.join('')
                   })
-                  return alertOutsidePlateau()
+                  break
                 case Direction.SOUTH:
                   if (roverPositionY > 0) {
                     return roverPositionY--
                   }
+                  roverTriedToMoveOutsidePlateau = true
                   nextTick(() => {
-                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    instructionsArray.splice(index, instructionsArray.length)
+                    roverForm.instructions = instructionsArray.join('')
                   })
-                  return alertOutsidePlateau()
+                  break
                 case Direction.EAST:
                   if (roverPositionX < (parseInt(plateauForm.upperRightCoordinates.split(' ')[0]) - 1)) {
                     return roverPositionX++
                   }
+                  roverTriedToMoveOutsidePlateau = true
                   nextTick(() => {
-                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    instructionsArray.splice(index, instructionsArray.length)
+                    roverForm.instructions = instructionsArray.join('')
                   })
-                  return alertOutsidePlateau()
+                  break
                 case Direction.WEST:
                   if (roverPositionX > 0) {
                     return roverPositionX--
                   }
+                  roverTriedToMoveOutsidePlateau = true
                   nextTick(() => {
-                    roverForm.instructions = roverForm.instructions.slice(0, -1)
+                    instructionsArray.splice(index, instructionsArray.length)
+                    roverForm.instructions = instructionsArray.join('')
                   })
-                  return alertOutsidePlateau()
+                  break
               }
               break
             default:
               break
           }
+          return roverDirection
         })
+        if (roverTriedToMoveOutsidePlateau) {
+          alertOutsidePlateau()
+        }
       }
       const instructions = roverForm.instructions
       const rover = {
@@ -323,10 +337,10 @@ export default defineComponent({
 
     watch(
       () => roverForm.value,
-      (newValue) => {
-        const updatedRovers = newValue.map((roverForm) => {
+      async (newValue) => {
+        const updatedRovers = await Promise.all(newValue.map((roverForm) => {
           return executeInstructions(roverForm)
-        })
+        }))
         rovers.value = updatedRovers
       },
       { deep: true }

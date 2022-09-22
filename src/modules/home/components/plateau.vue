@@ -7,19 +7,52 @@
           <div v-for="(rover, index) in computedRovers" :key="index">
             <div v-if="rover.position.x === x - 1 && rover.position.y === upperRightY - y" id="rover">
               <div v-if="rover.position.direction === Direction.NORTH" class="items-center justify-center align-center">
-                <img src="../../../assets/images/north-side-rover.png" alt="north" id="north-rover">
+                <img
+                  src="../../../assets/images/north-side-rover.png"
+                  alt="north"
+                  :xPosition="String(rover.position.x)"
+                  :yPosition="String(rover.position.y)"
+                  :direction="rover.position.direction"
+                  id="north-rover"
+                >
               </div>
               <div v-if="rover.position.direction === Direction.SOUTH">
-                <img src="../../../assets/images/south-side-rover.png" alt="south" id="south-rover">
+                <img
+                  src="../../../assets/images/south-side-rover.png"
+                  alt="south"
+                  :xPosition="String(rover.position.x)"
+                  :yPosition="String(rover.position.y)"
+                  :direction="rover.position.direction"
+                  id="south-rover"
+                >
               </div>
               <div v-if="rover.position.direction === Direction.WEST">
-                <img src="../../../assets/images/west-side-rover.png" alt="west" id="west-rover">
+                <img
+                  src="../../../assets/images/west-side-rover.png"
+                  alt="west"
+                  :xPosition="String(rover.position.x)"
+                  :yPosition="String(rover.position.y)"
+                  :direction="rover.position.direction"
+                  id="west-rover"
+                >
               </div>
               <div v-if="rover.position.direction === Direction.EAST">
-                <img src="../../../assets/images/east-side-rover.png" alt="east" id="east-rover">
+                <img
+                  src="../../../assets/images/east-side-rover.png"
+                  alt="east"
+                  :xPosition="String(rover.position.x)"
+                  :yPosition="String(rover.position.y)"
+                  :direction="rover.position.direction"
+                  id="east-rover"
+                >
               </div>
-              <div v-if="!rover.position.direction">
-                <img src="../../../assets/images/north-side-rover.png">
+              <div v-if="!rover.position.direction" id="rover-without-direction">
+                <img
+                  :xPosition="String(rover.position.x)"
+                  :yPosition="String(rover.position.y)"
+                  :direction="'none'"
+                  src="../../../assets/images/north-side-rover.png"
+                >
               </div>
             </div>
           </div>
