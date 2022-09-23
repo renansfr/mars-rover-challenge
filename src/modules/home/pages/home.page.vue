@@ -114,6 +114,7 @@ export default defineComponent({
     const vp$ = useVuelidate(plateauRules, plateauForm)
 
     const validatedUpperRightCoordinates = ref<boolean>(false)
+    const showAlertOutsidePlateauFirstPosition = ref<boolean>(false)
 
     const alertInvalidUpperRighCoordinates = async () => {
       await dialog.confirm({
@@ -139,6 +140,8 @@ export default defineComponent({
         message: 'The coordinates you are trying to add the rover are outside the plateau. Try another initial position.',
         okButtonText: 'Ok',
         okButtonType: 'primary'
+      }).then(() => {
+        showAlertOutsidePlateauFirstPosition.value = false
       })
     }
 
@@ -181,7 +184,7 @@ export default defineComponent({
           rover.position.y > (upperRightY) ||
           rover.position.x < 0 ||
           rover.position.y < 0) {
-          alertOutsidePlateauFirstPosition()
+          showAlertOutsidePlateauFirstPosition.value = true
           computedRoverForm.value[roverIndex].roverPosition = ''
           computedRoverForm.value[roverIndex].instructions = ''
           return false
@@ -338,6 +341,9 @@ export default defineComponent({
     watch(
       () => roverForm.value,
       async (newValue) => {
+        if (showAlertOutsidePlateauFirstPosition.value) {
+          alertOutsidePlateauFirstPosition()
+        }
         const updatedRovers = await Promise.all(newValue.map((roverForm) => {
           return executeInstructions(roverForm)
         }))
