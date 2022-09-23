@@ -177,8 +177,8 @@ export default defineComponent({
       const upperRightX = parseInt(upperRightCoordinatesArray[0])
       const upperRightY = parseInt(upperRightCoordinatesArray[1])
       rovers.value.forEach((rover, roverIndex) => {
-        if (rover.position.x > (upperRightX - 1) ||
-          rover.position.y > (upperRightY - 1) ||
+        if (rover.position.x > (upperRightX) ||
+          rover.position.y > (upperRightY) ||
           rover.position.x < 0 ||
           rover.position.y < 0) {
           alertOutsidePlateauFirstPosition()
@@ -273,7 +273,7 @@ export default defineComponent({
             case Move.FORWARD:
               switch (roverDirection) {
                 case Direction.NORTH:
-                  if (roverPositionY < (parseInt(plateauForm.upperRightCoordinates.split(' ')[1]) - 1)) {
+                  if (roverPositionY < (parseInt(plateauForm.upperRightCoordinates.split(' ')[1]))) {
                     return roverPositionY++
                   }
                   roverTriedToMoveOutsidePlateau = true
@@ -293,7 +293,7 @@ export default defineComponent({
                   })
                   break
                 case Direction.EAST:
-                  if (roverPositionX < (parseInt(plateauForm.upperRightCoordinates.split(' ')[0]) - 1)) {
+                  if (roverPositionX < (parseInt(plateauForm.upperRightCoordinates.split(' ')[0]))) {
                     return roverPositionX++
                   }
                   roverTriedToMoveOutsidePlateau = true
