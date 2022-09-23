@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row" v-if="upperRightX && upperRightY" id="plateau">
     <div v-for="(x, index) in upperRightX" :key="index">
-      <div v-for="(y, index) in upperRightY" :key="index" class="bg-red-300 border border-black h-28 w-28 m-1">
+      <div v-for="(y, index) in upperRightY" :key="index" class="bg-red-300 border border-black h-28 w-28 m-1 overflow-auto">
         <div v-if="computedRovers">
           ({{ x - 1 }}, {{ upperRightY - y  }})
           <div v-for="(rover, index) in computedRovers" :key="index">
