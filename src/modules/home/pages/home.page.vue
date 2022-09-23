@@ -234,9 +234,10 @@ export default defineComponent({
       let roverPositionY = parseInt(roverPositionArray[1])
       let roverDirection = roverPositionArray[2]
       let roverTriedToMoveOutsidePlateau = false
+      let instructions = roverForm.instructions
       const instructionsArray = roverForm.instructions.split('')
       if (instructionsArray) {
-        await instructionsArray.map((instruction, index) => {
+        instructions = await instructionsArray.map((instruction, index) => {
           switch (instruction) {
             case Move.LEFT:
               switch (roverDirection) {
@@ -317,13 +318,12 @@ export default defineComponent({
             default:
               break
           }
-          return roverDirection
+          return roverForm.instructions
         })
         if (roverTriedToMoveOutsidePlateau) {
           alertOutsidePlateau()
         }
       }
-      const instructions = roverForm.instructions
       const rover = {
         position: {
           x: roverPositionX,
