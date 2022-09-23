@@ -64,13 +64,15 @@
     <div class="font-title text-4xl text-red-600 font-semibold text-center mt-8 mb-8">
       Welcome to Mars!
     </div>
-    <div class="text-xl text-center">
-      To take a rover ride, follow the instructions below: <br>
-      1. Enter the upper-right coordinates of the plateau (e.g. 5 5) <br>
-      2. Enter a valid starting position of the rover to later insert instructions (e.g. 1 2 N) <br>
-      3. Enter the instructions for the rover (e.g. LMLMLMLMM) <br>
-      4. Repeat steps 2 and 3 for as many rovers as you want to add<br>
-      5. Take care inserting valid inputs (whitespaces and case sensitive letters)<br>
+    <div class="text-xl text-left">
+      To take a rover ride, follow the instructions below: <br><br>
+      1. Enter the upper-right coordinates of the plateau (e.g. 5 5) <br><br>
+      2. Enter a valid starting position of the rover to later insert instructions,
+      where the first number is the position on x axis, the second is the position on y axis
+      and the last letter is the direction ("N" for North, "S" for South, "E" for East and "W" for West) (e.g. 1 2 N) <br><br>
+      3. Enter the instructions for the rover where "L" is turn left, "R" is turn right and "M" is move forward (e.g. LMLMLMLMM) <br><br>
+      4. Click "Add Rover" and repeat steps 2 and 3 for as many rovers as you want to add<br><br>
+      5. Take care inserting valid inputs (whitespaces and case sensitive letters)<br><br>
       6. Have fun!
     </div>
   </div>
@@ -96,11 +98,11 @@ export default defineComponent({
   },
   setup(props) {
     const upperRightX = computed(() => {
-      return Number(props.upperRightCoordinates.split(' ')[0])
+      return Number(props.upperRightCoordinates.split(' ')[0]) + 1
     })
 
     const upperRightY = computed(() => {
-      return Number(props.upperRightCoordinates.split(' ')[1])
+      return Number(props.upperRightCoordinates.split(' ')[1]) + 1
     })
 
     const roversInternalValue = ref<any>(props.rovers)
